@@ -16,7 +16,8 @@ public static void main(String[] args)
 {
     
     URLFind URL = new URLFind();
-  // URL.createBufferStrategy(2000);
-   
+    //URL.createBufferStrategy(20);
+       
+    
 }    
 }

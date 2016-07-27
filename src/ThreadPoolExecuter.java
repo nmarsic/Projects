@@ -1,8 +1,0 @@
-
-/**
- *
- * @author nickm
- */
-class ThreadPoolExecuter {
-    
-}
