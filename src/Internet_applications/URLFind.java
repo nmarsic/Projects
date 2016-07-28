@@ -159,16 +159,15 @@ public void actionPerformed(ActionEvent e)
   {
       b.append("http://");
   }
-    //JOptionPane.showMessageDialog(null, "Address 1\n"+b.toString());  
-  
-  
+   
     b.append(txtURL.getText());
     
     if(!txtURL.getText().contains(".com"))
     { 
         DomainFormat();
     }
-          
+        //Construct the Fast (Thread) object to concurrently open and save the webpage  
+        
           Fast F= new Fast(b.toString());
           F.start();
     try {
@@ -176,7 +175,7 @@ public void actionPerformed(ActionEvent e)
         OSDetermination(b.toString());
     } catch (IOException ex) 
     {
-       //Error(); 
+      JOptionPane.showMessageDialog(null,ex.getMessage());
     } catch (InterruptedException ex) {
         Logger.getLogger(URLFind.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -378,11 +377,7 @@ class Back implements ActionListener
         @Override
         public void actionPerformed(ActionEvent e) 
         {
-        
-          e.setSource(btnback);
-          
-          
-     
+        CheckBack CheckB=new CheckBack(); 
           
           if(!last.isEmpty())
           {
@@ -401,24 +396,18 @@ class Back implements ActionListener
            OSDetermination(back.peek()); 
          
             
-        //contents.removeAll(contents);
-      
-         last=back.pop();
-        if(back.isEmpty())
-        {
         
-            btnback.setEnabled(false);
-        }
-        else
-        {
-            btnback.setEnabled(true);
-        }
+        //Buffer
+         last=back.pop();
+         
+       
+        CheckB.start();
            
-            txtURL.selectAll();
            
-             System.gc();
+           
+            
              
-            btnback.setSelected(false);
+           
              }catch (MalformedURLException ex) 
             {
                 JOptionPane.showMessageDialog(null,ex.getMessage());
@@ -431,10 +420,9 @@ class Back implements ActionListener
                  btngo.setBackground(Color.YELLOW);
                  btngo.setText("GO");
                  setTitle("WebPointer");
-            }catch (Exception t)
-            {
-                JOptionPane.showMessageDialog(null,t.getMessage());
-            }
+            } catch (InterruptedException ex) {
+           Logger.getLogger(URLFind.class.getName()).log(Level.SEVERE, null, ex);
+       }
     
 }
 }
@@ -443,27 +431,18 @@ class Forward implements ActionListener
         @Override
         public void actionPerformed(ActionEvent e) 
         {
-          btnforward.setSelected(true);
-            e.setSource(btnforward);
-             System.gc();
+         CheckForward CheckF=new CheckForward();
+           
         try
        {
           //Fast F=null;
          Fast F =new Fast(FWD.peek());
          F.start();
-         OSDetermination(FWD.peek());  
+         
+         OSDetermination(FWD.pop());  
        
         //Check if the stack is empty 
-         if(FWD.isEmpty())
-            {
-                btnforward.setEnabled(false);
-            }
-         else
-         {
-             btnforward.setEnabled(true);
-         }
-         
-         System.gc();
+        CheckF.start();
          
             }catch (MalformedURLException ex) 
             {
@@ -477,7 +456,7 @@ class Forward implements ActionListener
                  btngo.setText("GO");
                  btngo.setBackground(Color.YELLOW);
                  setTitle("WebPointer");
-            }catch (Exception t)
+            }catch (InterruptedException t)
             {
                 JOptionPane.showMessageDialog(null,t.getMessage());
             }
@@ -507,8 +486,10 @@ class Forward implements ActionListener
                  JOptionPane.showMessageDialog(null,"Malformed\n"+b.toString() );
                  b.delete(0,b.length());
                  JOptionPane.showMessageDialog(null,"Please retype the webaddress");
-             } catch (IOException ex) {
-             Logger.getLogger(URLFind.class.getName()).log(Level.SEVERE, null, ex);
+             
+             } catch (IOException ex) 
+           {
+             Error();
          }
          } 
          }
@@ -519,7 +500,10 @@ class Forward implements ActionListener
             if(!back.isEmpty())
            {
                btnback.setEnabled(true);        
-           }
+           }else
+            {
+                btnback.setEnabled(false);
+            }
             
      
      }
@@ -528,7 +512,8 @@ class Forward implements ActionListener
          
 class CheckForward extends Thread{
     @Override
-    public void run(){
+    public void run()
+    {
         // Check the Foward stack
          if(!FWD.empty())
                 {
